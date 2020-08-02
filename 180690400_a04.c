@@ -21,12 +21,14 @@ sem_t even, odd;
 int numResources;
 char inputFileName[] = "sample4_in.txt";
 
-
-
+char input[100] = "";
 // counters to check if there are odd or even threads left
 int evenCount = 0, oddCount = 0;
 int** maximum = NULL;
+int** allocation = NULL;
+int** need = NULL;
 int* available = NULL;
+
 
 
 typedef struct thread //represents a single thread, you can add more members if required
@@ -45,6 +47,9 @@ int threadsLeft(Thread* threads, int threadCount);
 int threadToStart(Thread* threads, int threadCount);
 void* threadRun(void* t);//the thread function, the code executed by each thread
 int readFile(char* fileName);//function to read the file content and build array of threads
+
+int RQ(char* input);
+int RL(char* input);
 
 int main(int argc, char *argv[])
 {
@@ -71,39 +76,36 @@ int main(int argc, char *argv[])
 		printf("%d ",available[i]);
 
 	}
-	printf("\n");
+	printf("\nMaximum resources from file:\n");
 
 	for (int i = 0; i<customerNumber; i++){
-		printf("Customer %d\n", i);
+
 		for (int j=0; j<numResources; j++){
 			printf("%d, ",maximum[i][j]);
 		}
+		printf("\n");
 	}
-	
 
-	/*
-	//initialize semaphores
-	sem_init(&even, 0, 1); 
-	sem_init(&odd, 0, 0); 
+	char* inToken = NULL;
+	while (1){
+		printf("Enter command: ");
+		fgets(input, 100, stdin);
+		inToken = strtok(input, " ");
 
-	startClock();
-	
-	while(threadsLeft(threads, threadCount)>0)//put a suitable condition here to run your program
-	{
-    //you can add some suitable code anywhere in this loop if required
-
-		int i = 0;
-		while((i=threadToStart(threads, threadCount))>-1)
-		{
-		        //you can add some suitable code anywhere in this loop if required
-
-			threads[i].state = 1;
-			threads[i].retVal = pthread_create(&(threads[i].handle),NULL,threadRun,&threads[i]);
+		if (strcmp(inToken,"RQ") == 0) {
+			printf("RQ command");
 		}
+		else if (strcmp(inToken,"RL") == 0){
+			printf("RL Command");
+		}
+		else {
+			printf("Invalid command");
+		}
+		
 	}
-	sem_destroy(&even);
-	sem_destroy(&odd);
-*/
+	
+
+
 	return 0;
 }
 
@@ -141,7 +143,8 @@ int readFile(char* fileName)//do not modify this method
 		command = strtok(NULL,"\r\n");
 	}
 	maximum = (int**) malloc(sizeof(int*)*customerCount);
-
+	need = (int**) malloc(sizeof(int*)*customerCount);
+	allocation = (int**) malloc(sizeof(int*)*customerCount);
 
 
 	char* lines[customerCount];
@@ -163,8 +166,10 @@ int readFile(char* fileName)//do not modify this method
 		//printf(lines[k]);
 		token =  strtok(lines[k],",");
 		
-		printf("Line: %s\n", lines[k]);
+		//printf("Line: %s\n", lines[k]);
 		maximum[k] = (int *)malloc(numResources * sizeof(int));
+		need[k] = (int *)malloc(numResources * sizeof(int));
+		allocation[k] = (int *)malloc(numResources * sizeof(int));
 		while(token!=NULL)
 		{
 //if you have extended the Thread struct then here
@@ -172,12 +177,26 @@ int readFile(char* fileName)//do not modify this method
 //or any other action on the Thread members
 			//printf("Token: %d\n", atoi(token));
 			maximum[k][j]=atoi(token);
+			need[k][j] = atoi(token);
+			allocation[k][j]=0;
 			//printf("%d", maximum[k][j]);
 			j++;
 			token = strtok(NULL,",");
 		}
 	}
 	return customerCount;
+}
+
+int RQ(char* input){
+	int success = -1;
+
+	return success;
+
+}
+int RL(char* input) {
+	int success = -1;
+
+	return success;
 }
 
 void logStart(char* tID)
@@ -279,3 +298,4 @@ long getCurrentTime()//invoke this method whenever you want check how much time 
 	now = time(NULL);
 	return now-programClock;
 }
+
