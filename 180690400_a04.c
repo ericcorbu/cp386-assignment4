@@ -17,8 +17,16 @@ time_t programClock;//the global timer/clock for the program
 // semaphores
 sem_t even, odd;
 
+// Number of resources
+int numResources = 4;
+char inputFileName[] = "sample4_in.txt";
+
+
+
 // counters to check if there are odd or even threads left
 int evenCount = 0, oddCount = 0;
+int** maximum = NULL;
+
 
 typedef struct thread //represents a single thread, you can add more members if required
 {
@@ -35,7 +43,7 @@ typedef struct thread //represents a single thread, you can add more members if 
 int threadsLeft(Thread* threads, int threadCount);
 int threadToStart(Thread* threads, int threadCount);
 void* threadRun(void* t);//the thread function, the code executed by each thread
-int readFile(char* fileName, Thread** threads);//function to read the file content and build array of threads
+int readFile(char* fileName);//function to read the file content and build array of threads
 
 int main(int argc, char *argv[])
 {
@@ -48,14 +56,18 @@ int main(int argc, char *argv[])
     //you can add some suitable code anywhere in main() if required
 
 	Thread* threads = NULL;
-	int threadCount = readFile(argv[1],&threads);
+	
+	
+	int customerNumber = readFile(inputFileName);
+	printf("Number of customers: %d",customerNumber);
 
-
+	/*
 	//initialize semaphores
 	sem_init(&even, 0, 1); 
 	sem_init(&odd, 0, 0); 
 
 	startClock();
+	
 	while(threadsLeft(threads, threadCount)>0)//put a suitable condition here to run your program
 	{
     //you can add some suitable code anywhere in this loop if required
@@ -71,11 +83,11 @@ int main(int argc, char *argv[])
 	}
 	sem_destroy(&even);
 	sem_destroy(&odd);
-
+*/
 	return 0;
 }
 
-int readFile(char* fileName, Thread** threads)//do not modify this method
+int readFile(char* fileName)//do not modify this method
 {
 	FILE *in = fopen(fileName, "r");
 	if(!in)
@@ -99,18 +111,20 @@ int readFile(char* fileName, Thread** threads)//do not modify this method
 	fclose(in);
 
 	char* command = NULL;
-	int threadCount = 0;
+	int customerCount = 0;
 	char* fileCopy = (char*)malloc((strlen(fileContent)+1)*sizeof(char));
 	strcpy(fileCopy,fileContent);
 	command = strtok(fileCopy,"\r\n");
 	while(command!=NULL)
 	{
-		threadCount++;
+		customerCount++;
 		command = strtok(NULL,"\r\n");
 	}
-	*threads = (Thread*) malloc(sizeof(Thread)*threadCount);
+	maximum = (int**) malloc(sizeof(int*)*customerCount);
 
-	char* lines[threadCount];
+
+
+	char* lines[customerCount];
 	command = NULL;
 	int i=0;
 	command = strtok(fileContent,"\r\n");
@@ -122,39 +136,23 @@ int readFile(char* fileName, Thread** threads)//do not modify this method
 		command = strtok(NULL,"\r\n");
 	}
 
-	for(int k=0; k<threadCount; k++)
+	for(int k=0; k<customerCount; k++)
 	{
 		char* token = NULL;
 		int j = 0;
-		token =  strtok(lines[k],";");
+		token =  strtok(lines[k],",");
+		maximum[k] = (int *)malloc(numResources * sizeof(int));
 		while(token!=NULL)
 		{
 //if you have extended the Thread struct then here
 //you can do initialization of those additional members
 //or any other action on the Thread members
-			(*threads)[k].state=0;
-			if(j==0) {
-				strcpy((*threads)[k].tid,token);
-				// sets even in thread to 1 if even, 0 if odd
-				if (atoi(&token[2])%2 ==0 ){
-					(*threads)[k].even = 1;
-
-					// increment even thread counter
-					evenCount++;
-				}
-				else {
-					(*threads)[k].even = 0;
-					//increment odd thread counter
-					oddCount++;
-				}
-			}
-			if(j==1)
-				(*threads)[k].startTime=atoi(token);
+			maximum[k][j]=atoi(&token);
 			j++;
-			token = strtok(NULL,";");
+			token = strtok(NULL,",");
 		}
 	}
-	return threadCount;
+	return customerCount;
 }
 
 void logStart(char* tID)
