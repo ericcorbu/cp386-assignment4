@@ -7,6 +7,10 @@
 #include <time.h>
 #include <semaphore.h>
 
+// GitHub name: ericcorbu
+// GitHub repo: https://github.com/ericcorbu/cp386-assignment4
+
+
 void logStart(char* tID);//function to log that a new thread is started
 void logFinish(char* tID);//function to log that a thread has finished its time
 
@@ -49,7 +53,7 @@ void* threadRun(void* t);//the thread function, the code executed by each thread
 int readFile(char* fileName);//function to read the file content and build array of threads
 
 int RQ(int* input);
-int RL(int* input);
+void RL(int* input);
 
 int main(int argc, char *argv[])
 {
@@ -115,7 +119,7 @@ int main(int argc, char *argv[])
 				i++;
 				inToken = strtok(NULL, " ");
 			}
-			int result = RL(arguments);
+			RL(arguments);
 		}
 		else {
 			printf("Invalid command");
@@ -207,12 +211,11 @@ int readFile(char* fileName)//do not modify this method
 }
 
 int RQ(int* input){
-	int success = -1;
 	int customerNum = input[0];
 	int safe = 1;
 	for (int i=0; i< sizeof(input)-1; i++){
 		need[customerNum][i] = maximum[customerNum][i] - allocation[customerNum][i];
-		printf("%d ", need[customerNum][i]);
+		//printf("%d ", need[customerNum][i]);
 		if (need[customerNum][i] > available[i]) {
 			safe = 0;
 		}
@@ -220,10 +223,8 @@ int RQ(int* input){
 	return safe;
 
 }
-int RL(int* input) {
-	int success = -1;
-
-	return success;
+void RL(int* input) {
+	
 }
 
 void logStart(char* tID)
@@ -263,16 +264,7 @@ void* threadRun(void* t)//implement this function in a suitable way
 	
 //your synchronization logic will appear here
 	// if even, wait for even semaphore
-	if (((Thread*)t)->even == 1 ){
-		sem_wait(&even);
-		evenCount--;
-	}
-	// if odd, wait for odd semaphore
-	else {
-		sem_wait(&odd);
-		oddCount--;
-	}
-
+	
 	//critical section starts here
 	printf("[%ld] Thread %s is in its critical section\n",getCurrentTime(), ((Thread*)t)->tid);
 
@@ -283,28 +275,6 @@ void* threadRun(void* t)//implement this function in a suitable way
 	// signal opposite semaphore
 
 	// for even threads
-	if (((Thread*)t)->even == 1 ){
-		// signal odd semaphore, if still odd threads to run
-		if (oddCount > 0) {
-			sem_post(&odd);
-		}
-		// if zero odd threads left, then will signal even semaphore
-		else {
-			sem_post(&even);
-		}
-		
-	}
-	// for odd threads
-	else {
-		// if there are still even threads to run, signal even semaphore
-		if (evenCount > 0) {
-			sem_post(&even);
-		}
-		// otherwise signal odd semaphore
-		else {
-			sem_post(&odd);
-		}
-	}
 
 
 
