@@ -233,15 +233,29 @@ void RL(int* input) {
 	
 }
 void asterisk() {
-	printf("Available: ");
+	printf("\nAvailable: ");
 	for (int i=0; i<numResources; i++){
 		printf("%d ", available[i]);
 	}
-	printf("\n\nMaximum 2d array:\n");
+	printf("\n\nMaximum:");
 	for (int i=0; i<customerNumber; i++){
 		printf("\nCustomer/Thread %d: ", i);
 		for (int j=0; j<numResources; j++){
-			printf("%d ",maximum[i][j]);
+			printf("%d ", maximum[i][j]);
+		}
+	}
+	printf("\n\nAllocated:");
+	for (int i=0; i<customerNumber; i++){
+		printf("\nCustomer/Thread %d: ", i);
+		for (int j=0; j<numResources; j++){
+			printf("%d ", allocation[i][j]);
+		}
+	}
+	printf("\n\nNeeded:");
+	for (int i=0; i<customerNumber; i++){
+		printf("\nCustomer/Thread %d: ", i);
+		for (int j=0; j<numResources; j++){
+			printf("%d ", need[i][j]);
 		}
 	}
 	printf("\n");
