@@ -23,6 +23,7 @@ sem_t even, odd;
 
 // Number of resources
 int numResources;
+int customerNumber;
 char inputFileName[] = "sample4_in.txt";
 
 char input[100] = "";
@@ -54,6 +55,7 @@ int readFile(char* fileName);//function to read the file content and build array
 
 int RQ(int* input);
 void RL(int* input);
+void asterisk();
 
 int main(int argc, char *argv[])
 {
@@ -68,7 +70,7 @@ int main(int argc, char *argv[])
 	//Thread* threads = NULL;
 	
 	numResources = argc -1;
-	int customerNumber = readFile(inputFileName);
+	customerNumber = readFile(inputFileName);
 	printf("Number of customers: %d\n",customerNumber);
 
 	available = (int*) malloc(sizeof(int)*(argc-1));
@@ -120,6 +122,10 @@ int main(int argc, char *argv[])
 				inToken = strtok(NULL, " ");
 			}
 			RL(arguments);
+		}
+		else if (strcmp(inToken, "*\n") == 0){
+			printf("Printing state of arrays.\n");
+			asterisk();
 		}
 		else {
 			printf("Invalid command");
@@ -225,6 +231,20 @@ int RQ(int* input){
 }
 void RL(int* input) {
 	
+}
+void asterisk() {
+	printf("Available: ");
+	for (int i=0; i<numResources; i++){
+		printf("%d ", available[i]);
+	}
+	printf("\n\nMaximum 2d array:\n");
+	for (int i=0; i<customerNumber; i++){
+		printf("\nCustomer/Thread %d: ", i);
+		for (int j=0; j<numResources; j++){
+			printf("%d ",maximum[i][j]);
+		}
+	}
+	printf("\n");
 }
 
 void logStart(char* tID)
