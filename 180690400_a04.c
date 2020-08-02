@@ -48,8 +48,8 @@ int threadToStart(Thread* threads, int threadCount);
 void* threadRun(void* t);//the thread function, the code executed by each thread
 int readFile(char* fileName);//function to read the file content and build array of threads
 
-int RQ(char* input);
-int RL(char* input);
+int RQ(int* input);
+int RL(int* input);
 
 int main(int argc, char *argv[])
 {
@@ -91,12 +91,31 @@ int main(int argc, char *argv[])
 		printf("Enter command: ");
 		fgets(input, 100, stdin);
 		inToken = strtok(input, " ");
-
+		int* arguments = (int *)malloc(numResources +1  * sizeof(int));
 		if (strcmp(inToken,"RQ") == 0) {
-			printf("RQ command");
+			int i =0;
+			while (inToken != NULL){
+				arguments[i] = atoi(inToken);
+				i++;
+				inToken = strtok(NULL, " ");
+			}
+			int result = RQ(arguments);
+			if (result == 1 ){
+				printf("Request is satisfied.\n");
+			}
+			else {
+				printf("Not enough free resources.\n");
+			}
 		}
 		else if (strcmp(inToken,"RL") == 0){
 			printf("RL Command");
+			int i =0;
+			while (inToken != NULL){
+				arguments[i] = atoi(inToken);
+				i++;
+				inToken = strtok(NULL, " ");
+			}
+			int result = RL(arguments);
 		}
 		else {
 			printf("Invalid command");
@@ -187,13 +206,21 @@ int readFile(char* fileName)//do not modify this method
 	return customerCount;
 }
 
-int RQ(char* input){
+int RQ(int* input){
 	int success = -1;
-
-	return success;
+	int customerNum = input[0];
+	int safe = 1;
+	for (int i=0; i< sizeof(input)-1; i++){
+		need[customerNum][i] = maximum[customerNum][i] - allocation[customerNum][i];
+		printf("%d ", need[customerNum][i]);
+		if (need[customerNum][i] > available[i]) {
+			safe = 0;
+		}
+	}
+	return safe;
 
 }
-int RL(char* input) {
+int RL(int* input) {
 	int success = -1;
 
 	return success;
