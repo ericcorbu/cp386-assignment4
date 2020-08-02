@@ -59,7 +59,15 @@ int main(int argc, char *argv[])
 	
 	
 	int customerNumber = readFile(inputFileName);
-	printf("Number of customers: %d",customerNumber);
+	printf("Number of customers: %d\n\n",customerNumber);
+
+	for (int i = 0; i<customerNumber; i++){
+		printf("Customer %d\n", i);
+		for (int j=0; j<numResources; j++){
+			printf("%d, ",maximum[i][j]);
+		}
+	}
+	
 
 	/*
 	//initialize semaphores
@@ -140,14 +148,19 @@ int readFile(char* fileName)//do not modify this method
 	{
 		char* token = NULL;
 		int j = 0;
+		//printf(lines[k]);
 		token =  strtok(lines[k],",");
+		
+		printf("Line: %s\n", lines[k]);
 		maximum[k] = (int *)malloc(numResources * sizeof(int));
 		while(token!=NULL)
 		{
 //if you have extended the Thread struct then here
 //you can do initialization of those additional members
 //or any other action on the Thread members
-			maximum[k][j]=atoi(&token);
+			//printf("Token: %d\n", atoi(token));
+			maximum[k][j]=atoi(token);
+			//printf("%d", maximum[k][j]);
 			j++;
 			token = strtok(NULL,",");
 		}
