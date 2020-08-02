@@ -18,7 +18,7 @@ time_t programClock;//the global timer/clock for the program
 sem_t even, odd;
 
 // Number of resources
-int numResources = 4;
+int numResources;
 char inputFileName[] = "sample4_in.txt";
 
 
@@ -26,6 +26,7 @@ char inputFileName[] = "sample4_in.txt";
 // counters to check if there are odd or even threads left
 int evenCount = 0, oddCount = 0;
 int** maximum = NULL;
+int* available = NULL;
 
 
 typedef struct thread //represents a single thread, you can add more members if required
@@ -55,11 +56,22 @@ int main(int argc, char *argv[])
 
     //you can add some suitable code anywhere in main() if required
 
-	Thread* threads = NULL;
+	//Thread* threads = NULL;
 	
-	
+	numResources = argc -1;
 	int customerNumber = readFile(inputFileName);
-	printf("Number of customers: %d\n\n",customerNumber);
+	printf("Number of customers: %d\n",customerNumber);
+
+	available = (int*) malloc(sizeof(int)*(argc-1));
+	for (int i=0; i<argc-1; i++){
+		available[i] = atoi(argv[i+1]);
+	}
+	printf("Currently available resources: ");
+	for (int i =0; i<argc-1; i++) {
+		printf("%d ",available[i]);
+
+	}
+	printf("\n");
 
 	for (int i = 0; i<customerNumber; i++){
 		printf("Customer %d\n", i);
