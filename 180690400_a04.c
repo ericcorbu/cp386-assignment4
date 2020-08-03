@@ -56,6 +56,7 @@ int readFile(char* fileName);//function to read the file content and build array
 int RQ(int* input);
 void RL(int* input);
 void asterisk();
+void Run();
 
 int main(int argc, char *argv[])
 {
@@ -106,7 +107,7 @@ int main(int argc, char *argv[])
 				inToken = strtok(NULL, " ");
 			}
 			int result = RQ(arguments);
-			if (result == 1 ){
+			if (result == 0 ){
 				printf("Request is satisfied.\n");
 			}
 			else {
@@ -126,6 +127,9 @@ int main(int argc, char *argv[])
 		else if (strcmp(inToken, "*\n") == 0){
 			printf("Printing state of arrays.\n");
 			asterisk();
+		}
+		else if(strcmp(inToken, "Run\n") ==0 ){
+			Run();
 		}
 		else {
 			printf("Invalid command");
@@ -217,24 +221,26 @@ int readFile(char* fileName)//do not modify this method
 }
 
 int RQ(int* input){
-	int customerNum = input[0];
+	int customerNum = input[1];
 	int safe = 0;
 	int valid = 0;
 	int sufficient = 0;
 	for (int i=1; i< numResources+1; i++){
-		printf("Request: %d \n", input[i]);
-		printf("Need: %d\n", need[customerNum][i-1]);
-		if (input[i] > need[customerNum][i-1]){
+		//printf("Request: %d \n", input[i]);
+		//printf("Need: %d\n", need[customerNum][i-1]);
+		if (input[i+1] > need[customerNum][i-1]){
 			valid = -1;
 			printf("Requested more resources then needed, request invalid.\n");
+			safe = -1;
 		}
-		if (input[i] > available[i-1]){
+		if (input[i+1] > available[i-1]){
 			sufficient = -1;
 			printf("Insufficient available resources.\n");
+			safe = -1;
 		}
-		available[i-1] = available[i-1] - input[i];
-		allocation[customerNum][i-1] = allocation[customerNum][i-1] + input[i];
-		need[customerNum][i-1] = need[customerNum][i-1] - input[i];
+		available[i-1] = available[i-1] - input[i+1];
+		allocation[customerNum][i-1] = allocation[customerNum][i-1] + input[i+1];
+		need[customerNum][i-1] = need[customerNum][i-1] - input[i+1];
 
 	}
 
@@ -249,11 +255,12 @@ int RQ(int* input){
 
 }
 void RL(int* input) {
-	int customerNum = input[0];
-	for (int i=1; i<numResources+1; i++){
-		available[i-1] = available[i-1] + input[i];
-		allocation[customerNum][i-1] = allocation[customerNum][i-1] - input[i];
-		need[customerNum][i-1] = need[customerNum][i-1] + input[i];
+	int customerNum = input[1];
+	//printf("Customer: %d", customerNum);
+	for (int i=1; i<numResources+2; i++){
+		available[i-1] = available[i-1] + input[i+1];
+		allocation[customerNum][i-1] = allocation[customerNum][i-1] - input[i+1];
+		need[customerNum][i-1] = need[customerNum][i-1] + input[i+1];
 	}
 	
 }
@@ -261,7 +268,7 @@ void RL(int* input) {
 int* safety() {
 	int* work = (int*) malloc(sizeof(int)*(numResources));
 	int* finish = (int*) malloc(sizeof(int)*(customerNumber));
-	int* order = (int*) malloc(sizeof(int)*customerNumber);
+	int* order = (int*) malloc(sizeof(int)*(customerNumber));
 	for (int i=0; i<customerNumber; i++){
 		order[i] = -1;
 	}
@@ -288,26 +295,19 @@ int* safety() {
 				finish[i] = 1;
 				order[completedCount] = i;
 				completedCount++;
-				i=0;
+				i =-1;
+				
 			}
-			else {
-				i++;
-			}
+			
 		
-		}
-		else {
-			i++;
-		}
-		if (i==customerNumber){
-			if (completedCount != customerNumber){
-				return -1;
-			}
-			else {
-				return order;
-			}
-		}
 
-}
+		}
+		i++;
+	}
+	if (completedCount < customerNumber) {
+		return -1;
+	}
+	return order;
 }
 
 void asterisk() {
@@ -339,6 +339,20 @@ void asterisk() {
 	printf("\n");
 }
 
+void Run(){
+	int* safeResult = safety();
+
+	if (safeResult == -1){
+		printf("No safe sequence.\n");
+	}
+	else {
+		printf("Safe sequence: ");
+		for (int i=0; i<customerNumber; i++){
+			printf("%d ", safeResult[i]);
+		}
+	}
+	printf("\n");
+}
 void logStart(char* tID)
 {
 	printf("[%ld] New Thread with ID %s is started.\n", getCurrentTime(), tID);
