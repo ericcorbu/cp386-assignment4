@@ -3,7 +3,7 @@ CP386 Assignment 4 - Banker's Algorithm
 ## Motivation
 To implement the Banker's Algorithm for resource allocation as per assignment 4 specifications.
 ## Installation
-In project directory, run `make`
+In project directory, run `make` or `make warnings_OK` to build with with warnings.
 ## Screenshots
 
 ## Individual Contribution
