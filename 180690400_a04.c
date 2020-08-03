@@ -218,18 +218,43 @@ int readFile(char* fileName)//do not modify this method
 
 int RQ(int* input){
 	int customerNum = input[0];
-	int safe = 1;
-	for (int i=0; i< sizeof(input)-1; i++){
-		need[customerNum][i] = maximum[customerNum][i] - allocation[customerNum][i];
-		//printf("%d ", need[customerNum][i]);
-		if (need[customerNum][i] > available[i]) {
-			safe = 0;
+	int safe = 0;
+	int valid = 0;
+	int sufficient = 0;
+	for (int i=1; i< numResources+1; i++){
+		printf("Request: %d \n", input[i]);
+		printf("Need: %d\n", need[customerNum][i-1]);
+		if (input[i] > need[customerNum][i-1]){
+			valid = -1;
+			printf("Requested more resources then needed, request invalid.\n");
 		}
+		if (input[i] > available[i-1]){
+			sufficient = -1;
+			printf("Insufficient available resources.\n");
+		}
+		available[i-1] = available[i-1] - input[i];
+		allocation[customerNum][i-1] = allocation[customerNum][i-1] + input[i];
+		need[customerNum][i-1] = need[customerNum][i-1] - input[i];
+
 	}
+
+	if (valid == -1 || sufficient == -1){
+		RL(input);
+	}
+	else {
+		printf("Safe.\n");
+	}
+
 	return safe;
 
 }
 void RL(int* input) {
+	int customerNum = input[0];
+	for (int i=1; i<numResources+1; i++){
+		available[i-1] = available[i-1] + input[i];
+		allocation[customerNum][i-1] = allocation[customerNum][i-1] - input[i];
+		need[customerNum][i-1] = need[customerNum][i-1] + input[i];
+	}
 	
 }
 void asterisk() {
