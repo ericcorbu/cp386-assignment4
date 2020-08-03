@@ -257,6 +257,59 @@ void RL(int* input) {
 	}
 	
 }
+
+int* safety() {
+	int* work = (int*) malloc(sizeof(int)*(numResources));
+	int* finish = (int*) malloc(sizeof(int)*(customerNumber));
+	int* order = (int*) malloc(sizeof(int)*customerNumber);
+	for (int i=0; i<customerNumber; i++){
+		order[i] = -1;
+	}
+	for (int i=0; i<numResources; i++){
+		work[i] = available[i];
+	}
+	for (int i=0; i<customerNumber; i++){
+		finish[i] = 0;
+	}
+	int i = 0;
+	int completedCount = 0;
+	while (i<customerNumber){
+		if (finish[i] == 0){
+			int possible = 1;
+			for (int j=0; j<numResources; j++){
+				if (need[i][j] > work[j]){
+					possible = -1;
+				}
+			}
+			if (possible == 1 ){
+				for (int j =0; j<numResources; j++){
+					work[j] = work[j] + allocation[i][j];
+				}
+				finish[i] = 1;
+				order[completedCount] = i;
+				completedCount++;
+				i=0;
+			}
+			else {
+				i++;
+			}
+		
+		}
+		else {
+			i++;
+		}
+		if (i==customerNumber){
+			if (completedCount != customerNumber){
+				return -1;
+			}
+			else {
+				return order;
+			}
+		}
+
+}
+}
+
 void asterisk() {
 	printf("\nAvailable: ");
 	for (int i=0; i<numResources; i++){
