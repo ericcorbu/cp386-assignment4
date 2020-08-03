@@ -9,6 +9,10 @@ In project directory, run `make`
 ## Individual Contribution
 All that wasn't provided as skeleton for A3.
 ## Features
+- Request resources
+- Release resources
+- Print state of arrays
+- Get safe order of threads
 - Populates maximum 2d array from file
 - Uses available resources from command line argument
 
